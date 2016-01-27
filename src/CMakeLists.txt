@@ -1,7 +1,13 @@
-rock_library(boost_serialization
-    SOURCES Dummy.cpp
-    HEADERS Dummy.hpp)
+find_package(Boost COMPONENTS serialization)
 
-rock_executable(boost_serialization_bin Main.cpp
-    DEPS boost_serialization)
+set(deps_pkg_config base-types)
+
+set(headers EigenTypes.hpp
+            BoostTypes.hpp
+            BaseTypes.hpp)
+
+rock_library(boost_serialization
+    HEADERS ${headers}
+    DEPS_CMAKE Boost
+    DEPS_PKGCONFIG ${deps_pkg_config})
 
