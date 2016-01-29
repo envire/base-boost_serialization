@@ -1,13 +1,15 @@
-find_package(Boost COMPONENTS serialization)
+#find_package(Boost COMPONENTS serialization)
 
-set(deps_pkg_config base-types)
+#set(deps_pkg_config base-types)
 
 set(headers EigenTypes.hpp
             BoostTypes.hpp
             BaseTypes.hpp)
 
-rock_library(boost_serialization
-    HEADERS ${headers}
-    DEPS_CMAKE Boost
-    DEPS_PKGCONFIG ${deps_pkg_config})
+#rock_library(boost_serialization
+#    HEADERS ${headers}
+#    DEPS_CMAKE Boost
+#    DEPS_PKGCONFIG ${deps_pkg_config})
+
+rock_install_headers(${headers})
 

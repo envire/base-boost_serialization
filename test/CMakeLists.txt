@@ -1,3 +1,5 @@
-rock_testsuite(test_suite suite.cpp
-   test_Dummy.cpp
-   DEPS boost_serialization)
+set(deps_pkg_config base-types)
+
+rock_testsuite(test_serialization suite.cpp
+   test_serialization.cpp
+   DEPS_PKGCONFIG ${deps_pkg_config})
