@@ -37,4 +37,14 @@ namespace boost { namespace serialization
         ar & boost::serialization::make_nvp("w", quaternion.w());
     }
 
+    /** Serializes Eigen::Transform types */
+    template<typename _Archive, typename _Scalar, int _Dim, int _Mode, int _Options>
+    inline void serialize(
+        _Archive & ar,
+        Eigen::Transform<_Scalar, _Dim, _Mode, _Options>& transform,
+        const unsigned int version)
+    {
+        ar & transform.matrix();
+    }
+
 }}
