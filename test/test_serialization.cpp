@@ -7,6 +7,8 @@
 #include <boost/archive/polymorphic_binary_iarchive.hpp>
 #include <boost/archive/polymorphic_binary_oarchive.hpp>
 
+#include <boost/serialization/shared_ptr.hpp>
+
 #include <boost_serialization/EigenTypes.hpp>
 #include <boost_serialization/BaseTypes.hpp>
 
@@ -62,4 +64,24 @@ BOOST_AUTO_TEST_CASE(eigen_transform_serialization_test)
     ia >> transform_i;
 
     BOOST_CHECK_EQUAL(transform_o.matrix().isApprox(transform_i.matrix()), true); 
+}
+
+BOOST_AUTO_TEST_CASE(boost_shared_ptr_serialization_test)
+{
+    boost::shared_ptr<Eigen::Quaterniond> rot_o(new Eigen::Quaterniond());
+
+    std::stringstream stream;
+    boost::archive::polymorphic_binary_oarchive oa(stream);
+    oa << rot_o;
+
+    // deserialize from string stream
+    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::shared_ptr<Eigen::Quaterniond> rot_i;
+    ia >> rot_i;
+
+    BOOST_CHECK_EQUAL(rot_o.use_count(), 1);
+    // THIS IS BUG IN BOOST
+    // the counter is 2 or more after the serialization
+    // probably fixed up version 1.57
+    BOOST_CHECK_EQUAL(rot_i.use_count(), 1);        
 }
