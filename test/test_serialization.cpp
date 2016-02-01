@@ -8,6 +8,7 @@
 #include <boost/archive/polymorphic_binary_oarchive.hpp>
 
 #include <boost_serialization/EigenTypes.hpp>
+#include <boost_serialization/BaseTypes.hpp>
 
 using namespace boost::serialization;
 
@@ -45,4 +46,20 @@ BOOST_AUTO_TEST_CASE(eigen_matrix_serialization_test)
     BOOST_CHECK(m.rows() == m2.rows());
     BOOST_CHECK(m.cols() == m2.cols());
     BOOST_CHECK(m == m2);
+}
+
+BOOST_AUTO_TEST_CASE(eigen_transform_serialization_test)
+{
+    base::Transform3d transform_o(2.2 * Eigen::Matrix3d::Identity());
+
+    std::stringstream stream;
+    boost::archive::polymorphic_binary_oarchive oa(stream);
+    oa << transform_o;
+
+    // deserialize from string stream
+    boost::archive::polymorphic_binary_iarchive ia(stream);
+    base::Transform3d transform_i;
+    ia >> transform_i;
+
+    BOOST_CHECK_EQUAL(transform_o.matrix().isApprox(transform_i.matrix()), true); 
 }
