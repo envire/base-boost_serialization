@@ -11,6 +11,7 @@
 
 #include <boost_serialization/EigenTypes.hpp>
 #include <boost_serialization/BaseTypes.hpp>
+#include <boost_serialization/BoostTypes.hpp>
 
 using namespace boost::serialization;
 
@@ -71,17 +72,47 @@ BOOST_AUTO_TEST_CASE(boost_shared_ptr_serialization_test)
     boost::shared_ptr<Eigen::Quaterniond> rot_o(new Eigen::Quaterniond());
 
     std::stringstream stream;
-    boost::archive::polymorphic_binary_oarchive oa(stream);
-    oa << rot_o;
+    boost::archive::polymorphic_binary_oarchive *oa = new boost::archive::polymorphic_binary_oarchive(stream);
+    (*oa) << rot_o;
 
     // deserialize from string stream
-    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::archive::polymorphic_binary_iarchive *ia = new boost::archive::polymorphic_binary_iarchive(stream);
     boost::shared_ptr<Eigen::Quaterniond> rot_i;
-    ia >> rot_i;
+    (*ia) >> rot_i;
 
     BOOST_CHECK_EQUAL(rot_o.use_count(), 1);
     // THIS IS BUG IN BOOST
     // the counter is 2 or more after the serialization
     // probably fixed up version 1.57
-    BOOST_CHECK_EQUAL(rot_i.use_count(), 1);        
+    BOOST_CHECK_EQUAL(rot_i.use_count(), 2); 
+    delete ia;
+    BOOST_CHECK_EQUAL(rot_i.use_count(), 1);       
+}
+
+BOOST_AUTO_TEST_CASE(boost_multi_array_serialization_test)
+{
+    boost::multi_array<double, 2> array_o;
+    array_o.resize(boost::extents[13][7]);
+
+    for (unsigned int x = 0; x < array_o.shape()[0]; ++x)
+    {
+        for (unsigned int y = 0; y < array_o.shape()[1]; ++y)
+        {
+            double cell_value = rand();
+            array_o[x][y] = cell_value;
+        }
+    }    
+
+    std::stringstream stream;
+    boost::archive::polymorphic_binary_oarchive oa(stream);
+    oa << array_o; 
+
+    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::multi_array<double, 2> array_i;
+    ia >> array_i;    
+
+    BOOST_CHECK_EQUAL(array_o.shape()[0], array_i.shape()[0]);
+    BOOST_CHECK_EQUAL(array_o.shape()[1], array_i.shape()[1]); 
+    
+    BOOST_CHECK(array_o == array_i);
 }
