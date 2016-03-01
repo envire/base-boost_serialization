@@ -13,6 +13,7 @@
 
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/array.hpp>
 
 namespace boost { namespace serialization
 {
