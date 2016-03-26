@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 //HACK to gain access to private members in directed_graph
 //Otherwise the directed graph cannot be serialized currently
 #define private public

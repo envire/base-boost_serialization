@@ -1,5 +1,6 @@
 <package>
-  <description brief="Headers for specific type serialization">
+    <description brief="Headers for specific type serialization">
+        Boost serialization for specific base types
   </description>
   <author> Envire Team/ric-team8@dfki.de</author>
   <license></license>
