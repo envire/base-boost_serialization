@@ -1,10 +1,11 @@
 find_package(Boost COMPONENTS serialization)
 
-set(deps_pkg_config base-types)
+set(deps_pkg_config base-types numeric)
 
 set(headers EigenTypes.hpp
             BoostTypes.hpp
-            BaseTypes.hpp)
+            BaseTypes.hpp
+            BaseNumeric.hpp)
 
 rock_library(boost_serialization
     HEADERS ${headers}
