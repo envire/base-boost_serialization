@@ -12,7 +12,7 @@ namespace boost { namespace serialization
     template<typename _Archive,typename ScalarType>
     inline void serialize(
         _Archive & ar,
-        base::PlaneFitting<ScalarType>& pf,
+        ::numeric::PlaneFitting<ScalarType>& pf,
         const unsigned int version)
     {
         ar & boost::serialization::make_nvp("x", pf.x);
