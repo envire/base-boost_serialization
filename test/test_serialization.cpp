@@ -2,10 +2,8 @@
 
 #include <Eigen/Geometry>
 
-#include <boost/archive/polymorphic_text_iarchive.hpp>
-#include <boost/archive/polymorphic_text_oarchive.hpp>
-#include <boost/archive/polymorphic_binary_iarchive.hpp>
-#include <boost/archive/polymorphic_binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 
 #include <boost/serialization/shared_ptr.hpp>
 
@@ -22,11 +20,11 @@ BOOST_AUTO_TEST_CASE(eigen_quaternion_serialization_test)
                             Eigen::AngleAxisd(0.27 * M_PI, Eigen::Vector3d::UnitX());
 
     std::stringstream stream;
-    boost::archive::polymorphic_binary_oarchive oa(stream);
+    boost::archive::binary_oarchive oa(stream);
     oa << rot;
 
     // deserialize from string stream
-    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::archive::binary_iarchive ia(stream);
     Eigen::Quaterniond rot_2;
     ia >> rot_2;
 
@@ -38,11 +36,11 @@ BOOST_AUTO_TEST_CASE(eigen_matrix_serialization_test)
     Eigen::Matrix3d m = 0.2 * Eigen::Matrix3d::Identity();
 
     std::stringstream stream;
-    boost::archive::polymorphic_binary_oarchive oa(stream);
+    boost::archive::binary_oarchive oa(stream);
     oa << m;
 
     // deserialize from string stream
-    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::archive::binary_iarchive ia(stream);
     Eigen::MatrixXd m2;
     ia >> m2;
 
@@ -56,11 +54,11 @@ BOOST_AUTO_TEST_CASE(eigen_transform_serialization_test)
     base::Transform3d transform_o(2.2 * Eigen::Matrix3d::Identity());
 
     std::stringstream stream;
-    boost::archive::polymorphic_binary_oarchive oa(stream);
+    boost::archive::binary_oarchive oa(stream);
     oa << transform_o;
 
     // deserialize from string stream
-    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::archive::binary_iarchive ia(stream);
     base::Transform3d transform_i;
     ia >> transform_i;
 
@@ -72,11 +70,11 @@ BOOST_AUTO_TEST_CASE(boost_shared_ptr_serialization_test)
     boost::shared_ptr<Eigen::Quaterniond> rot_o(new Eigen::Quaterniond());
 
     std::stringstream stream;
-    boost::archive::polymorphic_binary_oarchive *oa = new boost::archive::polymorphic_binary_oarchive(stream);
-    (*oa) << rot_o;
+    boost::archive::binary_oarchive oa(stream);
+    oa << rot_o;
 
     // deserialize from string stream
-    boost::archive::polymorphic_binary_iarchive *ia = new boost::archive::polymorphic_binary_iarchive(stream);
+    boost::archive::binary_iarchive *ia = new boost::archive::binary_iarchive(stream);
     boost::shared_ptr<Eigen::Quaterniond> rot_i;
     (*ia) >> rot_i;
 
@@ -104,10 +102,10 @@ BOOST_AUTO_TEST_CASE(boost_multi_array_serialization_test)
     }    
 
     std::stringstream stream;
-    boost::archive::polymorphic_binary_oarchive oa(stream);
+    boost::archive::binary_oarchive oa(stream);
     oa << array_o; 
 
-    boost::archive::polymorphic_binary_iarchive ia(stream);
+    boost::archive::binary_iarchive ia(stream);
     boost::multi_array<double, 2> array_i;
     ia >> array_i;    
 
