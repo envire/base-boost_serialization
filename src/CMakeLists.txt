@@ -5,7 +5,8 @@ set(deps_pkg_config base-types numeric)
 set(headers EigenTypes.hpp
             BoostTypes.hpp
             BaseTypes.hpp
-            BaseNumeric.hpp)
+            BaseNumeric.hpp
+            DynamicSizeSerialization.hpp)
 
 rock_library(boost_serialization
     HEADERS ${headers}

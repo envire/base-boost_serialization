@@ -10,6 +10,7 @@
 #include <boost_serialization/EigenTypes.hpp>
 #include <boost_serialization/BaseTypes.hpp>
 #include <boost_serialization/BoostTypes.hpp>
+#include <boost_serialization/DynamicSizeSerialization.hpp>
 
 using namespace boost::serialization;
 
@@ -113,4 +114,48 @@ BOOST_AUTO_TEST_CASE(boost_multi_array_serialization_test)
     BOOST_CHECK_EQUAL(array_o.shape()[1], array_i.shape()[1]); 
     
     BOOST_CHECK(array_o == array_i);
+}
+
+BOOST_AUTO_TEST_CASE(dynamic_size_serialization_test)
+{
+    uint64_t size_u8 = 1;
+    uint64_t size_u16 = ((uint64_t)std::numeric_limits<uint8_t>::max()) + 1;
+    uint64_t size_u32 = ((uint64_t)std::numeric_limits<uint16_t>::max()) + 1;
+    uint64_t size_u64 = ((uint64_t)std::numeric_limits<uint32_t>::max()) + 1;
+
+    std::stringstream stream;
+    boost::archive::binary_oarchive oa(stream);
+    boost::archive::binary_iarchive ia(stream);
+
+    uint64_t size = 0;
+    stream.str(std::string());
+    stream.clear();
+    saveSizeValue(oa, size_u8);
+    BOOST_CHECK_EQUAL(stream.str().size(), 1);
+    loadSizeValue(ia, size);
+    BOOST_CHECK_EQUAL(size, size_u8);
+
+    size = 0;
+    stream.str(std::string());
+    stream.clear();
+    saveSizeValue(oa, size_u16);
+    BOOST_CHECK_EQUAL(stream.str().size(), 1+2);
+    loadSizeValue(ia, size);
+    BOOST_CHECK_EQUAL(size, size_u16);
+
+    size = 0;
+    stream.str(std::string());
+    stream.clear();
+    saveSizeValue(oa, size_u32);
+    BOOST_CHECK_EQUAL(stream.str().size(), 1+2+4);
+    loadSizeValue(ia, size);
+    BOOST_CHECK_EQUAL(size, size_u32);
+
+    size = 0;
+    stream.str(std::string());
+    stream.clear();
+    saveSizeValue(oa, size_u64);
+    BOOST_CHECK_EQUAL(stream.str().size(), 1+2+4+8);
+    loadSizeValue(ia, size);
+    BOOST_CHECK_EQUAL(size, size_u64);
 }
