@@ -6,7 +6,8 @@ set(headers EigenTypes.hpp
             BoostTypes.hpp
             BaseTypes.hpp
             BaseNumeric.hpp
-            DynamicSizeSerialization.hpp)
+            DynamicSizeSerialization.hpp
+            ClassVersion.hpp)
 
 rock_library(boost_serialization
     HEADERS ${headers}
