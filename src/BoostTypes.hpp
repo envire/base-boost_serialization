@@ -99,6 +99,7 @@ namespace boost { namespace serialization
     template<class Archive, classes> \
     void load(Archive & ar, name<parameters>& t, const unsigned int /* version */ ) { \
         uint64_t count; loadSizeValue(ar, count); \
+        t.clear(); t.reserve(count); \
         for(size_t i=0; i<count; ++i) { \
             typename name<parameters>::value_type object_; \
             ar >> object_; \
