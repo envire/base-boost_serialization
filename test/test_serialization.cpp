@@ -12,6 +12,9 @@
 #include <boost_serialization/BoostTypes.hpp>
 #include <boost_serialization/DynamicSizeSerialization.hpp>
 
+#include <boost/container/flat_set.hpp>
+#include <boost/container/flat_map.hpp>
+
 using namespace boost::serialization;
 
 BOOST_AUTO_TEST_CASE(eigen_quaternion_serialization_test)
@@ -158,4 +161,53 @@ BOOST_AUTO_TEST_CASE(dynamic_size_serialization_test)
     BOOST_CHECK_EQUAL(stream.str().size(), 1+2+4+8);
     loadSizeValue(ia, size);
     BOOST_CHECK_EQUAL(size, size_u64);
+}
+
+template<class X>
+void test_in_out(const X& x)
+{
+    std::stringstream stream;
+    boost::archive::binary_oarchive oa(stream);
+    oa << x;
+
+    X y;
+    boost::archive::binary_iarchive ia(stream);
+    ia >> y;
+
+    BOOST_CHECK(x == y);
+}
+
+template<class Set>
+void test_set(int size) {
+    Set set;
+    typedef typename Set::value_type Value;
+
+    for(int i=0; i<size; ++i)
+        set.insert(Value(rand()));
+
+    test_in_out(set);
+}
+template<class Map>
+void test_map(int size) {
+    typedef typename Map::key_type Key;
+    typedef typename Map::mapped_type T;
+    Map map;
+
+    for(int i=0; i<size; ++i)
+        map.insert(std::pair<Key, T>(rand(), rand()));
+
+    test_in_out(map);
+}
+
+BOOST_AUTO_TEST_CASE(boost_flat_container_serialization_test)
+{
+    test_set<boost::container::flat_set<double> >(100);
+    test_set<boost::container::flat_set<int> >(1000);
+    test_set<boost::container::flat_multiset<int> >(100);
+    test_set<boost::container::flat_multiset<double> >(1000);
+
+    test_map<boost::container::flat_map<double, bool> >(100);
+    test_map<boost::container::flat_map<int, double> >(1000);
+    test_map<boost::container::flat_multimap<bool, float> >(100);
+    test_map<boost::container::flat_multimap<double, int> >(1000);
 }

@@ -17,6 +17,10 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/array.hpp>
 
+#include <boost/container/container_fwd.hpp>
+#include <boost_serialization/DynamicSizeSerialization.hpp>
+#include <boost/serialization/utility.hpp>
+
 namespace boost { namespace serialization
 {
 
@@ -81,5 +85,40 @@ namespace boost { namespace serialization
     {
         split_free( ar, t, version );
     }    
+
+
+
+#define ROCK_BOOST_SERIALIZATION_SET_OR_MAP(name, classes, parameters) \
+    template<class Archive, classes> \
+    inline void serialize(Archive& ar, name<parameters>& t, const unsigned int version) { split_free(ar, t, version); } \
+    template<class Archive, classes> \
+    void save(Archive & ar, const name<parameters>& t, const unsigned int /* version */ ) { \
+        uint64_t size(t.size()); saveSizeValue(ar, size); \
+        for(typename name<parameters>::const_iterator it = t.begin(); it != t.end(); ++it) { ar << *it; } \
+    } \
+    template<class Archive, classes> \
+    void load(Archive & ar, name<parameters>& t, const unsigned int /* version */ ) { \
+        uint64_t count; loadSizeValue(ar, count); \
+        for(size_t i=0; i<count; ++i) { \
+            typename name<parameters>::value_type object_; \
+            ar >> object_; \
+            t.insert(t.end(), std::move(object_)); \
+        } \
+    } \
+
+#define ROCK_BOOST_SERIALIZATION_SET_CLASSES class Key, class Compare, class Allocator
+#define ROCK_BOOST_SERIALIZATION_SET_PARAMETERS Key, Compare, Allocator
+    ROCK_BOOST_SERIALIZATION_SET_OR_MAP(boost::container::flat_set,      ROCK_BOOST_SERIALIZATION_SET_CLASSES, ROCK_BOOST_SERIALIZATION_SET_PARAMETERS)
+    ROCK_BOOST_SERIALIZATION_SET_OR_MAP(boost::container::flat_multiset, ROCK_BOOST_SERIALIZATION_SET_CLASSES, ROCK_BOOST_SERIALIZATION_SET_PARAMETERS)
+#undef ROCK_BOOST_SERIALIZATION_SET_CLASSES
+#undef ROCK_BOOST_SERIALIZATION_SET_PARAMETERS
+#define ROCK_BOOST_SERIALIZATION_MAP_CLASSES class Key, class Value, class Compare, class Allocator
+#define ROCK_BOOST_SERIALIZATION_MAP_PARAMETERS Key, Value, Compare, Allocator
+    ROCK_BOOST_SERIALIZATION_SET_OR_MAP(boost::container::flat_map,      ROCK_BOOST_SERIALIZATION_MAP_CLASSES, ROCK_BOOST_SERIALIZATION_MAP_PARAMETERS)
+    ROCK_BOOST_SERIALIZATION_SET_OR_MAP(boost::container::flat_multimap, ROCK_BOOST_SERIALIZATION_MAP_CLASSES, ROCK_BOOST_SERIALIZATION_MAP_PARAMETERS)
+#undef ROCK_BOOST_SERIALIZATION_MAP_CLASSES
+#undef ROCK_BOOST_SERIALIZATION_MAP_PARAMETERS
+
+#undef ROCK_BOOST_SERIALIZATION_SET_OR_MAP
 
 }}
