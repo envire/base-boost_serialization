@@ -9,7 +9,6 @@
 #define BOOST_TEMPLATED_CLASS_VERSION(T, N)                            \
 namespace boost {                                                      \
 namespace serialization {                                              \
-template<>                                                             \
 template<typename Type>                                                \
 struct version<T<Type> >                                               \
 {                                                                      \
