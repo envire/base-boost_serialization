@@ -1,3 +1,6 @@
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 find_package(Boost COMPONENTS serialization)
 
 set(deps_pkg_config base-types numeric)
